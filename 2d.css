@@ -1,0 +1,117 @@
+*{
+            margin:0;
+            padding:0;
+        }
+        body{
+            background: #000;
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+        }
+        #content{
+            position: relative;
+            height: 100px;
+            width: 100px;
+            -webkit-transform-style: preserve-3d;
+            -webkit-animation: spin 4s linear infinite;
+            -webkit-transform-origin: 50% 50%;
+            left: 50%;
+            top:300px;
+        }
+        .d{
+            height: 100px;
+            width: 100px;
+            line-height: 100px;
+            font-size: 50px;
+            position: absolute;
+            text-align: center;
+            -webkit-transform-origin: 50% 100%;
+            background: #28343b; /* Old browsers */
+            background: -moz-linear-gradient(top, #28343b 0%, #828c95 16%, #828c95 87%, #28343b 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#28343b), color-stop(16%,#828c95), color-stop(87%,#828c95), color-stop(100%,#28343b)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #28343b 0%,#828c95 16%,#828c95 87%,#28343b 100%); /* Chrome10+,Safari5.1+ */
+        }
+        .d1{
+            left:50px;
+            top:100px;
+            -webkit-animation: runA 3s linear infinite;
+        }
+        .d11{
+            opacity: 0;
+            -webkit-animation: runA 3s 1s linear infinite;
+        }
+        .d111{
+            opacity: 0;
+            -webkit-animation: runA 3s 2s linear infinite;
+        }
+        .d2{
+            left:50px;
+            top:0px;
+            -webkit-animation: runB 3s  linear infinite;
+        }
+        .d22{
+            opacity: 0;
+            -webkit-animation: runB 3s 1s linear infinite;
+        }
+        .d222{
+            opacity: 0;
+            -webkit-animation: runB 3s 2s linear infinite;
+        }
+        .d3{
+            left:0px;
+            top:50px;
+            -webkit-animation: runC 3s  linear infinite;
+        }
+        .d33{
+            opacity: 0;
+            -webkit-animation: runC 3s 1s linear infinite;
+        }
+        .d333{
+            opacity: 0;
+            -webkit-animation: runC 3s 2s linear infinite;
+        }
+        .d4{
+            left:100px;
+            top:50px;
+            -webkit-animation: runD 3s  linear infinite;
+        }
+        .d44{
+            opacity: 0;
+            -webkit-animation: runD 3s 1s linear infinite;
+        }
+        .d444{
+            opacity: 0;
+            -webkit-animation: runD 3s 2s linear infinite;
+        }
+        @-webkit-keyframes spin
+        {
+            from {
+                -webkit-transform: rotate(0deg) scale(1);
+            }
+            50% {
+                -webkit-transform: rotate(180deg) scale(3);
+            }
+            to {
+                -webkit-transform: rotate(360deg) scale(1);
+            }
+        }
+        @-webkit-keyframes runA
+        {
+            from { -webkit-transform: perspective(10px) rotateX(12.5deg) rotateY(0deg) rotateZ(180deg)   translateX(0px) translateY(200px); opacity: 1; }
+            to   { -webkit-transform: perspective(10px) rotateX(12.5deg) rotateY(0deg) rotateZ(180deg)   translateX(0px) translateY(-100px); opacity: 1; }
+        }
+        @-webkit-keyframes runB
+        {
+            from { -webkit-transform: perspective(10px) rotateX(-12.5deg) rotateY(0deg) rotateZ(0deg) translateX(0px) translateY(200px); opacity: 1;}
+            to   { -webkit-transform: perspective(10px) rotateX(-12.5deg) rotateY(0deg) rotateZ(0deg) translateX(0px) translateY(-100px); opacity: 1;}
+        }
+        @-webkit-keyframes runC
+        {
+            from { -webkit-transform: perspective(10px) rotateX(0deg) rotateY(12.5deg) rotateZ(-90deg) translateX(0px) translateY(200px); opacity: 1;}
+            to   { -webkit-transform: perspective(10px) rotateX(0deg) rotateY(12.5deg) rotateZ(-90deg) translateX(0px) translateY(-100px); opacity: 1;}
+        }
+        @-webkit-keyframes runD
+        {
+            from { -webkit-transform: perspective(10px) rotateX(0deg) rotateY(-12.5deg) rotateZ(90deg) translateX(0px) translateY(200px); opacity: 1;}
+            to   { -webkit-transform: perspective(10px) rotateX(0deg) rotateY(-12.5deg) rotateZ(90deg) translateX(0px) translateY(-100px); opacity: 1;}
+        }
