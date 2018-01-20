@@ -36,7 +36,7 @@ var S = {
 };
 
 function show() {
-    window.location.href = "sd/2.html";
+    window.location.href = "2.html";
 }
 
 
