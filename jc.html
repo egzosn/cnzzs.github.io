@@ -52,13 +52,12 @@
 </svg>
 
 
-<script type="text/javascript" src="js/jquery.js" ></script>
 <script  type="text/javascript">
     setTimeout(function () {
         document.getElementsByTagName("svg")[0].style.display="inline";
     }, 2000)
     setTimeout(function () {
-        $("html").load("/dg/index.html")
+      location.href="dg/index.html"
     }, 2000)
     function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
