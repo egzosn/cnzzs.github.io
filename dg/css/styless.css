@@ -36,8 +36,8 @@ body {
   -webkit-backface-visibility: hidden;
   -ms-backface-visibility: hidden;
   backface-visibility: hidden;
-  -webkit-animation: in 500ms 6s ease-out forwards;
-  animation: in 500ms 6s ease-out forwards;
+  -webkit-animation: in 1000ms 6s ease-out forwards;
+  animation: in 1000ms 6s ease-out forwards;
 }
 .velas1 {
   top: 213px;
