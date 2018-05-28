@@ -1,7 +1,7 @@
 <div class="js-commit-preview commit-preview"><div id="readme" class="readme  html-blob blob instapaper_body">
     <div class="markdown-body">
-        <p>作者github地址:
-            <a href="https://github.com/loveshell/ngx_lua_waf">https://github.com/loveshell/ngx_lua_waf</a></p>
+        <p>下载地址
+            <a href="https://github.com/egzosn/ngx_lua_waf">https://github.com/egzosn/ngx_lua_waf</a></p>
 
         <h3><a id="user-content-用途" class="anchor" href="#用途" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>用途：</h3>
 
@@ -11,7 +11,8 @@
     屏蔽常见的扫描黑客工具，扫描器
     屏蔽异常的网络请求
     屏蔽图片附件类目录php执行权限
-    防止webshell上传
+    防止webshell上传，
+    可视化配置
 </code></pre>
 
         <h3><a id="user-content-推荐安装" class="anchor" href="#推荐安装" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>推荐安装:</h3>
@@ -98,21 +99,23 @@
         <p>下载 wget <a href="http://luajit.org/download/LuaJIT-2.0.0.tar.gz">http://luajit.org/download/LuaJIT-2.0.0.tar.gz</a>
             解压 tar zxvf LuaJIT-2.0.0.tar.gz cd LuaJIT-2.0.0</p>
 
-<pre><code>make
-    make install PREFIX=/usr/local/lj2 ln -s /usr/local/lj2/lib/libluajit-5.1.so.2 /lib64/
+<pre><code>
+    make
+    make install PREFIX=/usr/local/lj2
+    ln -s /usr/local/lj2/lib/libluajit-5.1.so.2 /lib64/
 </code></pre>
 
         <p>进入 cd /usr/local/src/</p>
 
         <h4><a id="user-content-2-下载-ngx_devel_kit" class="anchor" href="#2-下载-ngx_devel_kit" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>2. 下载 ngx_devel_kit</h4>
 
-        <p>下载 wget <a href="https://github.com/simpl/ngx_devel_kit/archive/v0.2.17rc2.zip">https://github.com/simpl/ngx_devel_kit/archive/v0.2.17rc2.zip</a>
-            解压 unzip v0.2.17rc2</p>
+        <p>下载 wget <a href="https://github.com/simplresty/ngx_devel_kit/archive/v0.3.0.zip">https://github.com/simplresty/ngx_devel_kit/archive/v0.3.0.zip</a>
+            解压 unzip v0.3.0.zip，然后文件夹重命名(因编译是文件名不能出现“-”) ngx_devel_kit_0.3.0</p>
 
         <h4><a id="user-content-3-下载-lua-nginx-module" class="anchor" href="#3-下载-lua-nginx-module" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>3. 下载 lua-nginx-module</h4>
 
-        <p>下载  wget <a href="https://github.com/chaoslawful/lua-nginx-module/archive/v0.7.4.zip">https://github.com/chaoslawful/lua-nginx-module/archive/v0.7.4.zip</a>
-            解压  unzip v0.7.4</p>
+        <p>下载  wget <a href="https://github.com/openresty/lua-nginx-module/archive/v0.10.7.zip">https://github.com/openresty/lua-nginx-module/archive/v0.10.7.zip</a>
+            解压 unzip v0.10.7.zip ，然后文件夹重命名(因编译是文件名不能出现“-”) lua_nginx_module_0.10.7</p>
 
         <h4><a id="user-content-4-下载-nginx-1115" class="anchor" href="#4-下载-nginx-1115" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>4. 下载 nginx-1.11.5</h4>
 
@@ -124,18 +127,22 @@
 
         <p>设置lua临时环境变量</p>
 
-<pre><code>export LUAJIT_LIB=/usr/local/lj2/lib/
+<pre><code>
+    export LUAJIT_LIB=/usr/local/lj2/lib/
+
     export LUAJIT_INC=/usr/local/lj2/include/luajit-2.0/
 </code></pre>
 
         <p>配置</p>
 
-<pre><code>./configure --user=daemon --group=daemon --prefix=/usr/local/nginx/ --with-http_stub_status_module --withhttp_sub_module --with-http_gzip_static_module --without-mail_pop3_module --without-mail_imap_module --withoutmail_smtp_module  --add-module=../ngx_devel_kit-0.2.17rc2/ --add-module=../lua-nginx-module-0.7.4/
+<pre><code>
+    ./configure  --user=daemon --group=daemon --prefix=/usr/local/nginx/ --with-http_ssl_module --with-http_v2_module --with-http_stub_status_module --with-http_sub_module --with-http_gzip_static_module --without-mail_pop3_module --without-mail_imap_module --without-mail_smtp_module --add-module=/usr/local/src/ngx_devel_kit_0.3.0/ --add-module=/usr/local/src/lua_nginx_module_0.10.7/
 </code></pre>
 
         <p>构造 安装 </p>
 
-<pre><code>make -j8
+<pre><code>
+    make -j8
     make install
 </code></pre>
 
@@ -147,7 +154,8 @@
         <h6><a id="user-content-修改文件名" class="anchor" href="#修改文件名" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>修改文件名</h6>
 
 <pre><code>mv ngx_lua_waf-master /usr/local/nginx/conf/waf
-    mkdir -p /data/logs/hack chmod -R 775 /data/logs/hack
+    mkdir -p /data/logs/hack
+    chmod -R 775 /data/logs/hack
 </code></pre>
 
         <h6><a id="user-content-nginx安装完之后-修改nginx配置文件-nginxconf-详情-----请查看上面使用说明" class="anchor" href="#nginx安装完之后-修改nginx配置文件-nginxconf-详情-----请查看上面使用说明" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>nginx安装完之后 修改nginx配置文件 nginx.conf 详情     请查看上面《使用说明》</h6>
