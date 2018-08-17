@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>制作七夕表白</title>
+</head>
+<body>
+输入你要表白的对象：<input type="text" id="a"><br/>
+输入你的名字：<input type="text" id="b"><br/>
+输入开始追求的时间(格式yyyy-MM-dd)：<input type="text" id="c"><br/>
+
+<button onclick="submit()">确定</button>
+<script type="text/javascript">
+
+    function submit() {
+        location.href="index.html?a=" +encodeURIComponent(encodeURIComponent(document.getElementById("a").value)) +"&b="+encodeURIComponent(encodeURIComponent(document.getElementById("b").value)) +"&c="+encodeURIComponent(encodeURIComponent(document.getElementById("c").value))
+    }
+</script>
+</body>
+</html>

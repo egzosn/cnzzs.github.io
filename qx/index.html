@@ -71,28 +71,28 @@
 
         group = new THREE.Group();
         scene.add(group);
-        var string = "亲爱的七夕快乐";
+        var string = "love you!";
         // Get text from hash
         var action = window.location.href,
             i = action.indexOf('?a=');
         if (i !== -1) {
             string = decodeURIComponent(decodeURIComponent(action)).substring(i + 3) + "," + string;
         }
+        document.title=string;
 
+        /*  var hash = document.location.hash.substr(1);
 
-        var hash = document.location.hash.substr(1);
+          if (hash.length !== 0) {
 
-        if (hash.length !== 0) {
+              string = hash;
 
-            string = hash;
-
-        }
+          }*/
 
         var text3d = new THREE.TextGeometry(string, {
             size: 80,
             height: 20,
             curveSegments: 2,
-            font: "helvetiker"
+//            font: "arial"
 
         });
 
