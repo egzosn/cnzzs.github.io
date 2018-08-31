@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>帮助中心</title>
+    <link type="text/css" rel="stylesheet" href="css/helpcenter.css">
+</head>
+<body>
+
+<div class="search-wrap">
+    <div class="box">
+        <form action="/issue/search">
+            <div class="sch-box">
+                <input name="siteId" value="5" type="hidden">
+                <txt style="position: absolute; z-index: 2; line-height: 52px; margin-left: 13px; margin-top: 0px; font-size: 13.3333px; font-family: MS Shell Dlg \32 ; color: rgb(158, 158, 158); display: inline;">
+                    关键词
+                </txt>
+                <input class="f-text" name="keyword" value="" placeholder=" " type="text">
+                <input class="btn-search" value="搜索"  type="submit"></div>
+        </form>
+    </div>
+</div>
+
+<div class="box main">
+    <div class="subside-box">
+        <div class="subside-in">
+            <h3 class="h3-title">常见问题分类</h3>
+            <dl class="subside-mod" js-do="subsideList" style="display: none">
+                <dd class="title({c})">  <a href="({url})?id=({id})" >({title})</a> </dd>
+            </dl>
+
+        </div>
+    </div>
+    <div class="content">
+        <div class="breadcrumb">
+            <span id="sLevel1"></span>
+        </div>
+
+
+        <div js-do="body" class="bs-body" style="display: none">
+            <div>
+                <div class="help-tit1" id="({id})">({title})</div>
+                ({content})
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<div class="he-footer">
+
+</div>
+<script type="text/javascript" src="js/jquery_1.12.4_jquery.min.js"></script>
+<script type="text/javascript"  src="js/template.js"></script>
+<script type="text/javascript"  src="js/request.js"></script>
+<script type="text/javascript"  src="js/helpconter.js"></script>
+
+
+</body>
+</html>
