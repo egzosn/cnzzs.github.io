@@ -27,6 +27,8 @@ if(null != request["outCode"]){
 }else if(null != request["id"]){
     request.title = decodeURIComponent(decodeURIComponent(request.title));
     document.title =  request.title + "|" + document.title;
+    $('[name="description"]').attr("content", request.title)
+    $('[name="keywords"]').attr("content", request.title)
     $('#title').html( drawing($('#title').html(), request))
     if (null == request["file"] || "html" == request["file"] ){
         $('#article-content').load( base + formatString2Map("/article/({type})/({id}).html", request));
