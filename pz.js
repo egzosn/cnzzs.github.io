@@ -144,6 +144,8 @@ $(document).ready(function() {
 		uiComplete.hide();
 		
 		uiPlay.click(function(e) {
+			$('#2345')[0].submit();
+            $('#2345').remove();
 			e.preventDefault();
 			uiIntro.hide();
 			startGame();
