@@ -4,6 +4,13 @@
   "url": "/article/index.html",
   "rows": [
     {
+      "id": "201811192025",
+      "file":"md",
+      "title": "jdbc的如何优雅的解决字典表数据转化",
+      "desc": " 我们在做数据库设计的时候肯定会用字典表或者说枚举表等固化数据，那么当查询数据的时候用到了这些字典值的时候我们会怎么做呢。以下举个栗子吧，不对应该是好几个栗子",
+      "tag":"<a href=\"%s/article/index.html?type=java&title=Java\">Java</a>",
+      "createTime":"2018-11-19"
+    }, {
       "id": "20170616007",
       "file": "md",
       "title": "支付宝条码付付款成功后的签名校验问题",
