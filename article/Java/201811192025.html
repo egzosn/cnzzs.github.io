@@ -1,0 +1,869 @@
+<p>我们在做数据库设计的时候肯定会用字典表或者说枚举表等固化数据，那么当查询数据的时候用到了这些字典值的时候我们会怎么做呢。以下举个栗子吧，不对应该是好几个栗子</p>
+
+<p>字典表（PUB_RESTRICTION）</p>
+
+<table>
+    <thead>
+    <tr>
+        <th>SERIAL_NO</th>
+        <th>DESC_ID</th>
+        <th>DESC_CHINA</th>
+        <th>KEYWORD</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>67550001</td>
+        <td>1</td>
+        <td>城区</td>
+        <td>AREA_TYPE</td>
+    </tr>
+    <tr>
+        <td>67550002</td>
+        <td>2</td>
+        <td>郊区</td>
+        <td>AREA_TYPE</td>
+    </tr>
+    <tr>
+        <td>67550003</td>
+        <td>3</td>
+        <td>县城</td>
+        <td>AREA_TYPE</td>
+    </tr>
+    <tr>
+        <td>67550004</td>
+        <td>4</td>
+        <td>乡镇</td>
+        <td>AREA_TYPE</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>用户表(MANA_USER)</p>
+
+<table>
+    <thead>
+    <tr>
+        <th>USER_ID</th>
+        <th>USER_NAME</th>
+        <th>USER_SEX</th>
+        <th>AREA_TYPE</th>
+        <th>USER_STATE</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>1</td>
+        <td>张三</td>
+        <td>男</td>
+        <td>67550001</td>
+        <td>正常</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>李四</td>
+        <td>女</td>
+        <td>67550002</td>
+        <td>正常</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>王五</td>
+        <td>未知</td>
+        <td>67550001</td>
+        <td>冻结</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>黄六</td>
+        <td>男</td>
+        <td>67550004</td>
+        <td>未审核</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>刚毕业的Egan接到老大的需求，把用户数据展示在页面上，&lsquo;AREA_TYPE&rsquo;字段从字典表里面取出. Egan说到：这个简单，两张表关联查询一下。</p>
+
+<p>然后Egan就吧啦吧啦的写起了代码&hellip;.</p>
+
+<pre>
+<code>SELECT
+  mu.USER_ID,
+  mu.USER_NAME,
+  mu.USER_SEX,
+  pr.DESC_CHINA AREA_TYPE,
+  mu.USER_STATE
+FROM MANA_USER mu LEFT JOIN PUB_RESTRICTION pr ON mu.AREA_TYPE = pr.SERIAL_NO
+WHERE pr.KEYWORD='AREA_TYPE'</code></pre>
+
+<p>就这样超快速的写完了，真的好简单啊，有什么难的，去老大那边炫耀一下我的效率:老大写完了，这样是不是你要的效果</p>
+
+<table>
+    <thead>
+    <tr>
+        <th>USER_ID</th>
+        <th>USER_NAME</th>
+        <th>USER_SEX</th>
+        <th>AREA_TYPE</th>
+        <th>USER_STATE</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>1</td>
+        <td>张三</td>
+        <td>男</td>
+        <td>城区</td>
+        <td>正常</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>李四</td>
+        <td>女</td>
+        <td>郊区</td>
+        <td>正常</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>王五</td>
+        <td>未知</td>
+        <td>城区</td>
+        <td>冻结</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>黄六</td>
+        <td>男</td>
+        <td>乡镇</td>
+        <td>未审核</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>&ldquo;嗯嗯，小伙子不错不错&rdquo;。老大回答到。&ldquo;等等，你看性别还有状态直接放字符串不好吧，也改成字典数据吧&rdquo;。</p>
+
+<p>Egan答到：&ldquo;这样也不难，我在关联下就好了&rdquo;,然后Egan又开始嗒嗒嗒的开始了。</p>
+
+<h3>字典表增加性别还有状态的字典数据</h3>
+
+<table>
+    <thead>
+    <tr>
+        <th>SERIAL_NO</th>
+        <th>DESC_ID</th>
+        <th>DESC_CHINA</th>
+        <th>KEYWORD</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>67550001</td>
+        <td>1</td>
+        <td>城区</td>
+        <td>AREA_TYPE</td>
+    </tr>
+    <tr>
+        <td>67550002</td>
+        <td>2</td>
+        <td>郊区</td>
+        <td>AREA_TYPE</td>
+    </tr>
+    <tr>
+        <td>67550003</td>
+        <td>3</td>
+        <td>县城</td>
+        <td>AREA_TYPE</td>
+    </tr>
+    <tr>
+        <td>67550004</td>
+        <td>4</td>
+        <td>乡镇</td>
+        <td>AREA_TYPE</td>
+    </tr>
+    <tr>
+        <td>67510001</td>
+        <td>1</td>
+        <td>男</td>
+        <td>USER_SEX</td>
+    </tr>
+    <tr>
+        <td>67510002</td>
+        <td>2</td>
+        <td>女</td>
+        <td>USER_SEX</td>
+    </tr>
+    <tr>
+        <td>67510003</td>
+        <td>3</td>
+        <td>未知</td>
+        <td>USER_SEX</td>
+    </tr>
+    <tr>
+        <td>67520001</td>
+        <td>1</td>
+        <td>正常</td>
+        <td>USER_STATE</td>
+    </tr>
+    <tr>
+        <td>67520002</td>
+        <td>2</td>
+        <td>冻结</td>
+        <td>USER_STATE</td>
+    </tr>
+    <tr>
+        <td>67520003</td>
+        <td>3</td>
+        <td>未审核</td>
+        <td>USER_STATE</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>用户表修改数据</p>
+
+<table>
+    <thead>
+    <tr>
+        <th>USER_ID</th>
+        <th>USER_NAME</th>
+        <th>USER_AGE</th>
+        <th>AREA_TYPE</th>
+        <th>USER_STATE</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>1</td>
+        <td>张三</td>
+        <td>67510001</td>
+        <td>67550001</td>
+        <td>67520001</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>李四</td>
+        <td>67510002</td>
+        <td>67550002</td>
+        <td>67520001</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>王五</td>
+        <td>67510003</td>
+        <td>67550001</td>
+        <td>67520002</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>黄六</td>
+        <td>67510001</td>
+        <td>67550004</td>
+        <td>67520003</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>修改sql</p>
+
+<pre>
+<code>SELECT
+  mu.USER_ID,
+  mu.USER_NAME,
+  pr2.DESC_CHINA USER_SEX,
+  pr.DESC_CHINA  AREA_TYPE,
+  pr2.DESC_CHINA USER_STATE
+FROM MANA_USER mu LEFT JOIN PUB_RESTRICTION pr ON mu.AREA_TYPE = pr.SERIAL_NO
+  LEFT JOIN PUB_RESTRICTION pr1 ON mu.USER_SEX = pr1.SERIAL_NO
+  LEFT JOIN PUB_RESTRICTION pr2 ON mu.USER_STATE = pr2.SERIAL_NO
+WHERE pr.KEYWORD = 'AREA_TYPE' AND pr1.KEYWORD = 'USER_SEX' AND pr2.KEYWORD = 'USER_STATE'</code></pre>
+
+<p>就这样写好了，Egan看着自己写的代码有点烦的说到，这样子有点难看。咚咚咚的跑去问老大：&ldquo;老大，这样写表关联太多了，重复的关联那张表，好臃肿的样子，有没有什么比较好的方式&rdquo; &ldquo;是有点，有点臃肿，让我想想&rdquo;，一会儿老大答到：&ldquo;你用函数吧，写一个函数通过字典值去取&rdquo;.</p>
+
+<p>然后Egan就回去写写起了函数</p>
+
+<pre>
+<code>CREATE FUNCTION "GET_DESC_CHINA"(IN_SERIAL_NO NUMBER, IN_KEYWORD VARCHAR(32))
+  RETURN VARCHAR
+IS
+  OUT_DESC_CHINA VARCHAR(40);
+  BEGIN
+    IF IN_SERIAL_NO IS NOT NULL
+    THEN
+      SELECT DESC_CHINA
+      INTO OUT_DESC_CHINA
+      FROM PUB_RESTRICTION
+      WHERE SERIAL_NO = IN_SERIAL_NO AND KEYWORD = IN_KEYWORD;
+      RETURN OUT_DESC_CHINA;
+    ELSE
+      RETURN '';
+    END IF;
+  END;</code></pre>
+
+<p>修改sql</p>
+
+<pre>
+<code>SELECT
+  mu.USER_ID,
+  mu.USER_NAME,
+  GET_DESC_CHINA(mu.USER_SEX,'USER_SEX') USER_SEX,
+  GET_DESC_CHINA(mu.AREA_TYPE,'AREA_TYPE') AREA_TYPE,
+  GET_DESC_CHINA(mu.USER_STATE,'USER_STATE') USER_STATE
+FROM MANA_USER mu</code></pre>
+
+<p>噎，看起来舒服多了。</p>
+
+<p>日积月累之后，数据量增长上去，某一天Egan接到一个奇葩的需求：需要根据查询条件导出对应的用户数据。由于导出的数据量有点大效率有点慢下来了.</p>
+
+<p>Egan有点摸不着头脑了，找到老大说：&ldquo;这样用函数的形式数据量一大起来发现比我不转化直接导出id来说慢了好多好多。函数这样写，每一行都会去字典表查询一遍，好慢好慢，慢到要哭了(┬＿┬)&rdquo;</p>
+
+<p>老大说到字典的数据量不大也比较固化，要不你把字典数据放到内存里面吧。然后在程序里面匹配吧。</p>
+
+<p>Egan咚咚咚的回去，优雅的定义了一个字典对象</p>
+
+<pre>
+<code>/**
+ * 公共资源处理
+ * Created by egan on 2018/11/19.
+ */
+@Component("pr")
+public class PubRestrictUtils {
+
+    public static final String USER_SEX = "USER_SEX";
+    public static final String AREA_TYPE = "AREA_TYPE";
+    public static final String USER_STATE = "USER_STATE";
+    /**
+     *  字典表： Map&lt;关键词, Map&lt;SERIAL_NO, 中文名&gt;&gt;
+     */
+    private Map&lt;String, Map&lt;BigDecimal, Object&gt;&gt; propertys = new HashMap&lt;String, Map&lt;BigDecimal, Object&gt;&gt;();
+
+    @Autowired
+    private PubRestrictDao pubRestrictDao;
+
+
+    @PostConstruct
+    public void init(){
+        loadRestrict(USER_SEX);
+        loadRestrict(AREA_TYPE);
+        loadRestrict(USER_STATE);
+    }
+
+    public void loadRestrict(String keyWord){
+        List&lt;Map&lt;String, Object&gt;&gt; list = pubRestrictDao.getPubRestrictByKeyWord(keyWord);
+        if (list.isEmpty()){
+            return;
+        }
+         Map&lt;BigDecimal, Object&gt;  propertys = new HashMap&lt;BigDecimal, Object&gt;(list.size());
+        for (Map&lt;String, Object&gt; map : list){
+            propertys.put((BigDecimal) MapUtils.getObject(map,"SERIAL_NO"), MapUtils.getString(map,"DESC_CHINA") );
+        }
+        this.propertys.put(keyWord, propertys);
+    }
+
+    public String getUserSex(BigDecimal code){
+        return get(USER_SEX, code);
+    }
+
+    public String getAreaType(BigDecimal code){
+        return get(AREA_TYPE, code);
+    }
+
+    public String getUserState(BigDecimal code){
+        return get(USER_STATE, code);
+    }
+
+
+    public String get(String keyWord, BigDecimal code){
+        Map&lt;BigDecimal, Object&gt; propertys = getProperty( keyWord);
+        if (MapUtils.isEmpty(propertys)){
+            return code.toString();
+        }
+        String property = MapUtils.getString(propertys, code, code.toString());
+        return property;
+
+    }
+
+    public Map&lt;BigDecimal, Object&gt; getProperty(String keyWord){
+        return propertys.get(keyWord);
+
+    }
+
+    public Map&lt;String, Map&lt;BigDecimal, Object&gt;&gt; getPropertys() {
+        return propertys;
+    }
+}</code></pre>
+
+<p>修改sql</p>
+
+<pre>
+<code>SELECT
+  mu.USER_ID,
+  mu.USER_NAME,
+  mu.USER_SEX,
+  mu.AREA_TYPE,
+  mu.USER_STATE
+FROM MANA_USER mu</code></pre>
+
+<p>写完字典工具类之后，把数据库查询出来的结果集遍历一遍，把对应的字段取出来匹配。大概是以下这样的</p>
+
+<pre>
+<code>@Autowired
+PubRestrictUtils pubRestrict
+... 此处省略好多饭
+
+List&lt;Map&lt;String, Object&gt;&gt; dataList = ...
+for(Map&lt;String, Object&gt; data : dataList){
+    data.put(PubRestrictUtils.USER_SEX, pubRestrict.getUserSex(data.get(PubRestrictUtils.USER_SEX)));
+    data.put(PubRestrictUtils.AREA_TYPE, pubRestrict.getAreaType(data.get(PubRestrictUtils.AREA_TYPE)));
+    data.put(PubRestrictUtils.USER_STATE, pubRestrict.getUserState(data.get(PubRestrictUtils.USER_STATE)));
+}
+... 此处省略好多饭</code></pre>
+
+<p>刚把用户功能改完，Egan发现还有订单，账户&hellip;&hellip;&hellip;&hellip;，好多好多，忍不住流下酸痛的泪(┬＿┬)。</p>
+
+<p>Egan又只好咚咚咚跑去老大那里诉苦了：&ldquo;老大，这样我要改哭啊，而且感觉都是重复的代码(┬＿┬)&rdquo;</p>
+
+<p>老大连忙安慰到：&ldquo;不哭不哭，你看，数据库操作使用jdbc是吧，那在查询的时候返回来结果是ResultSet，遍历ResultSet之后才是你的dataList数据是吧，那你直接在统一处理吧，去判断哪些是需要转换的，这样子业务层你就不用任何改动了。&rdquo;</p>
+
+<p>&ldquo;噎，好像很有道理哦，那我怎么知道哪些是需要转换的呢？&rdquo; Egan傻傻的回到。</p>
+
+<p>老大： &ldquo;你通过ResultSetMetaData.getColumnName去跟字典表的KeyWord进行匹配就好了，匹配上去了就转换&rdquo;</p>
+
+<p>Egan：&ldquo;不是所有ColumnName的名字都跟字典表KeyWord一样的呢&rdquo;</p>
+
+<p>老大：&ldquo;你试试别名上面下手脚，比如：吧啦吧啦&hellip;&hellip;&rdquo;</p>
+
+<p>讲完了,Egan好像听懂了，就哒啦嗒啦的开始写了</p>
+
+<pre>
+<code>/**
+ *
+ *  通过别名表达式处理处理结果集方案
+ *
+ * 注意 &lt;b&gt;因别名不能超过30个字符，所以在处理的时候尽量是简短&lt;/b&gt;
+ *
+ *  使用的方式 主要分为四种
+ * 方式一： bean名称#方法名$数据库字段名别名，这里数据库字段名别名用于最后展示使用
+ * 这里通过bean名称去匹配对应的处理对象
+ *  &lt;p&gt;
+ *      select mu.AREA_TYPE \"pr#getAreaType$AREA_TYPE\" FROM MANA_USER mu
+ *  &lt;/p&gt;
+ * 方式二： 方法名$数据库字段名别名，这里数据库字段名别名用于最后展示使用
+ *  PubRestrict pubRestrict
+ * 这里通过 new HeartAliasColumnMapRowMapper(pubRestrict) 的形式进行 pubRestrict是对象实例，然后规则内的方法名就是属于本实例的方法名
+ *  &lt;p&gt;
+ *      select mu.AREA_TYPE \"getAreaType$AREA_TYPE\" FROM MANA_USER mu
+ *  &lt;/p&gt;
+ * 方式三：集合key名称$数据库字段名别名，这里数据库字段名别名用于最后展示使用
+ *  这里的集合属于字典表： Map&lt;集合key名称, Map&lt;记录数据, 需要转换的值&gt;&gt; 这样类型的一个集合，主要用于对结果整体的处理
+ *   Map&lt;String, Map&lt;String, String&gt;&gt; propertys = new HashMap&lt;String, Map&lt;String, String&gt;&gt;();
+ * 这里通过 new HeartAliasColumnMapRowMapper(propertys) 的形式进行, propertys是所有结果列里面存储的信息
+ *  &lt;p&gt;
+ *      select mu.AREA_TYPE AREA_TYPE$AREA_TYPE FROM MANA_USER mu
+ *  &lt;/p&gt;
+ * 方式四：k$数据库字段名别名，这里数据库字段名别名用于最后展示使用
+ *  这里的集合属于字典表：  Map&lt;记录数据, 需要转换的值&gt; 这样类型的一个集合，主要用于对结果整体的处理
+ *   Map&lt;String, String&gt; propertys = new HashMap&lt;String,  String&gt;();
+ * 这里通过 new HeartAliasColumnMapRowMapper(propertys) 的形式进行, propertys是所有结果列里面存储的信息
+ *  &lt;p&gt;
+ *        select mu.AREA_TYPE k$AREA_TYPE FROM MANA_USER mu
+ *  &lt;/p&gt;
+ * 方式五：(数据库字段名别名=集合key名称)$，这里数据库字段名别名用于最后展示使用
+ *  这里的集合属于字典表： Map&lt;集合key名称, Map&lt;记录数据, 需要转换的值&gt;&gt; 这样类型的一个集合，主要用于对结果整体的处理
+ *   Map&lt;String, Map&lt;String, String&gt;&gt; propertys = new HashMap&lt;String, Map&lt;String, String&gt;&gt;();
+ * 这里通过 new HeartAliasColumnMapRowMapper(propertys) 的形式进行, propertys是所有结果列里面存储的信息
+ *  &lt;p&gt;
+ *      select mu.AREA_TYPE AREA_TYPE$ FROM MANA_USER mu
+ *  &lt;/p&gt;
+ *
+ * 使用方式
+ *  JdbcTemplate.query(sql, new AliasElColumnMapRowMapper(propertys)
+ * &lt;p&gt;
+ * 注意： 方案五是方案三的简化版；方案二，方案三（方案五），方案四是互斥的，在场景中只能使用一种，方案一的话是通用型的
+ * &lt;/p&gt;
+ *
+ * Created by egan on 2018/11/19.
+ * &lt;br/&gt;
+ * email: egzosn@gmail.com
+ */
+public class AliasElColumnMapRowMapper extends ColumnMapRowMapper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AliasElColumnMapRowMapper.class);
+    private static final Map&lt;String, Method&gt; METHOD_MAP = new HashMap&lt;String, Method&gt;();
+    WebApplicationContext wac = ContextLoader.getCurrentWebApplicationContext();
+
+    /**
+     * 转换bean实例，用于方案一，二的处理
+     */
+    private Object bean;
+    /**
+     * 方案四：k$数据库字段名别名
+     */
+    private Map&lt;Object, Object&gt; property;
+    /**
+     *  方案三，方案五：集合key名称$数据库字段名别名
+     */
+    private Map&lt;String, Map&lt;Object, Object&gt;&gt; propertys;
+
+    public AliasElColumnMapRowMapper() {
+    }
+    /**
+     * 初始化，bean或者MAP入参
+      * 方式二： 方法名$数据库字段名别名，这里数据库字段名别名用于最后展示使用
+     *  PubRestrict pubRestrict
+     * 这里通过 new HeartAliasColumnMapRowMapper(pubRestrict) 的形式进行 pubRestrict是对象实例，然后规则内的方法名就是属于本实例的方法名
+     *  &lt;p&gt;
+     *      select mu.AREA_TYPE \"getAreaType$AREA_TYPE\" FROM MANA_USER mu
+     *  &lt;/p&gt;
+     * 方式三：集合key名称$数据库字段名别名，这里数据库字段名别名用于最后展示使用
+     *  这里的集合属于字典表： Map&lt;集合key名称, Map&lt;记录数据, 需要转换的值&gt;&gt; 这样类型的一个集合，主要用于对结果整体的处理
+     *   Map&lt;String, Map&lt;String, String&gt;&gt; propertys = new HashMap&lt;String, Map&lt;String, String&gt;&gt;();
+     * 这里通过 new HeartAliasColumnMapRowMapper(propertys) 的形式进行, propertys是所有结果列里面存储的信息
+     *  &lt;p&gt;
+     *      select mu.AREA_TYPE AREA_TYPE$AREA_TYPE FROM MANA_USER mu
+     *  &lt;/p&gt;
+     * 方式四：k$数据库字段名别名，这里数据库字段名别名用于最后展示使用
+     *  这里的集合属于字典表：  Map&lt;记录数据, 需要转换的值&gt; 这样类型的一个集合，主要用于对结果整体的处理
+     *   Map&lt;String, String&gt; propertys = new HashMap&lt;String,  String&gt;();
+     * 这里通过 new HeartAliasColumnMapRowMapper(propertys) 的形式进行, propertys是所有结果列里面存储的信息
+     *  &lt;p&gt;
+     *        select mu.AREA_TYPE k$AREA_TYPE FROM MANA_USER mu
+     *  &lt;/p&gt;
+     * 方式五：(数据库字段名别名=集合key名称)$，这里数据库字段名别名用于最后展示使用
+     *  这里的集合属于字典表： Map&lt;集合key名称, Map&lt;记录数据, 需要转换的值&gt;&gt; 这样类型的一个集合，主要用于对结果整体的处理
+     *   Map&lt;String, Map&lt;String, String&gt;&gt; propertys = new HashMap&lt;String, Map&lt;String, String&gt;&gt;();
+     * 这里通过 new HeartAliasColumnMapRowMapper(propertys) 的形式进行, propertys是所有结果列里面存储的信息
+     *  &lt;p&gt;
+     *      select mu.AREA_TYPE AREA_TYPE$ FROM MANA_USER mu
+     *  &lt;/p&gt;
+     *
+     * 使用方式
+     *  JdbcTemplate.query(sql, new AliasElColumnMapRowMapper(propertys)
+     * &lt;p&gt;
+     */
+    public AliasElColumnMapRowMapper(Object handlerObj) {
+        if (null == handlerObj){
+            return;
+        }
+        if (!(handlerObj instanceof Map)){
+            this.bean = handlerObj;
+            return;
+        }
+        Map&lt;Object, Object&gt; property = (Map&lt;Object, Object&gt;)handlerObj;
+        if ( property.isEmpty()) {
+            return;
+        }
+        if ( property.entrySet().iterator().next().getValue() instanceof Map){
+            this.propertys = ( Map&lt;String, Map&lt;Object, Object&gt;&gt;) handlerObj;
+            return;
+        }
+        this.property = property;
+    }
+
+    @Override
+    public Map&lt;String, Object&gt; mapRow(ResultSet rs, int rowNum) throws SQLException {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int columnCount = rsmd.getColumnCount();
+        Map&lt;String, Object&gt; mapOfColValues = createColumnMap(columnCount);
+        for (int i = 1; i &lt;= columnCount; i++) {
+            String key = getColumnKey(JdbcUtils.lookupColumnName(rsmd, i));
+
+            Object[] elInfo = getElInfo(key);
+            Object obj = getColumnValue(rs, i);
+            if (null == elInfo || null == obj){
+                mapOfColValues.put(key, obj);
+                continue;
+            }
+           Object value = ((ElHandler)elInfo[1]).handler(obj, elInfo);
+            if (obj == value){
+                mapOfColValues.put(key, obj);
+            }else {
+                mapOfColValues.put((String) elInfo[0], value);
+            }
+        }
+        return mapOfColValues;
+    }
+
+    /**
+     * 根据字段别名获取表达式
+     * @param key 字段别名
+     * @return 返回格式 {别名,处理方案, (处理方法|集合key名称)?, 处理对象}
+     */
+    private Object[] getElInfo(String key){
+        int end = key.lastIndexOf("$");
+        if (end &lt; 1){
+            return null;
+        }
+        if (end + 1 == key.length()){
+            String alias = key.substring(0, end);
+            return new Object[]{alias, ElHandler.MAP_K, alias, propertys};
+        }
+        String alias = key.substring(end + 1);
+        String el = key.substring(0, end);
+        if (ElHandler.K.name().equals(el.toUpperCase())){
+          if (null == property){
+              return null;
+          }
+            return new Object[]{alias, ElHandler.K, property};
+        }
+        end = el.indexOf("#");
+        if (end &gt; 1){
+            return new Object[]{alias, ElHandler.BEAN, el.substring(end + 1), wac.getBean(el.substring(0, end))};
+        }
+        if (null != bean){
+            return new Object[]{alias, ElHandler.BEAN, el, bean};
+        }
+        if (null != propertys){
+            return new Object[]{alias, ElHandler.MAP_K, el, propertys};
+        }
+        return null;
+    }
+
+    enum ElHandler{
+        /**
+         * 方式一，方式二使用
+         */
+        BEAN {
+            /**
+             * value处理器
+             *
+             * @param value      数据库查询结果
+             * @param el         表达式集
+             * @return 处理后的结果
+             */
+            @Override
+            public Object handler(Object value, Object[] el) {
+                Object handlerObj = el[3];
+                Class&lt;?&gt;  handlerClass = handlerObj.getClass();
+                String methodName = (String) el[2];
+                String key = handlerClass.getName() + "#" + methodName;
+                Method method = METHOD_MAP.get(key);
+                if (null == method){
+                    method = BeanUtils.findMethod(handlerClass, methodName, value.getClass());
+                    if (null == method){
+                        return value;
+                    }
+                    METHOD_MAP.put(key, method);
+                }
+                try {
+                    return method.invoke(handlerObj, value);
+                } catch (IllegalAccessException e) {
+                    AliasElColumnMapRowMapper.LOGGER.error("handlerObj 方法调用异常", e);
+                } catch (InvocationTargetException e) {
+                    AliasElColumnMapRowMapper.LOGGER.error("handlerObj 方法调用异常", e);
+                }
+                return value;
+            }
+        },
+        /**
+         * 方式三，方式五
+         */
+        MAP_K {
+            /**
+             * value处理器
+             *
+             * @param value      数据库查询结果
+             * @param el         表达式集
+             * @return 处理后的结果
+             */
+            @Override
+            public Object handler(Object value, Object[] el) {
+
+                if (null ==  el[3]){
+                    return value;
+                }
+                Map&lt;String, Map&lt;Object, Object&gt;&gt; handlerObj = (Map&lt;String, Map&lt;Object, Object&gt;&gt;)el[3];
+                if ( handlerObj.isEmpty()){
+                    return value;
+                }
+                Map&lt;Object, Object&gt; property = handlerObj.get(el[2]);
+                if (null == property || property.isEmpty()){
+                    return value;
+                }
+                Object o = property.get(value);
+                if (o != null){
+                    return o;
+                }
+                return value;
+            }
+        },
+        /**
+         * 方式四
+         */
+        K {
+            /**
+             * value处理器
+             *
+             * @param value 数据库查询结果
+             * @param el    表达式集
+             * @return 处理后的结果
+             */
+            @Override
+            public Object handler(Object value, Object[] el) {
+                if (null ==  el[2]){
+                    return value;
+                }
+                Map&lt;Object, Object&gt; handlerObj = ( Map&lt;Object, Object&gt;)el[2];
+                if (handlerObj.isEmpty() ){
+                    return value;
+                }
+                Object o = handlerObj.get(value);
+                if (o != null){
+                    return o;
+                }
+
+                return value;
+            }
+        };
+
+        /**
+         *  value处理器
+         * @param value 数据库查询结果
+         * @param el 表达式集 {别名,处理方案, (处理方法|集合key名称)?, 处理对象}
+         * @return 处理后的结果
+         */
+        public abstract Object handler(Object value,  Object[] el);
+    }</code></pre>
+
+<p>修改sql</p>
+
+<pre>
+<code>SELECT
+  mu.USER_ID,
+  mu.USER_NAME,
+  mu.USER_SEX$,
+  mu.AREA_TYPE$,
+  mu.USER_STATE$
+FROM MANA_USER mu</code></pre>
+
+<p>Dao部分调用代码， JdbcTemplate 调用的时候加入第二个参数；</p>
+
+<pre>
+<code>@Autowired
+PubRestrictUtils pubRestrict
+@Autowired
+JdbcTemplate jdbcTemplate;
+...此处省略好多好多
+String sql = "SELECT  mu.USER_ID,  mu.USER_NAME,  mu.USER_SEX USER_SEX$,  mu.AREA_TYPE AREA_TYPE$,  mu.USER_STATE USER_STATE$ FROM MANA_USER mu";
+List&lt;Map&lt;String, Object&gt;&gt; dataList =jdbcTemplate.query(sql, new AliasElColumnMapRowMapper(pubRestrict.getPropertys()));
+
+...此处省略好多好多</code></pre>
+
+<p>就这样写好了。老大还夸奖了下Egan，Egan都乐了好几天。</p>
+
+<p>好了，进入正题，讲解下AliasElColumnMapRowMapper的使用吧，虽然在这个类的说明里面也讲了很细了。</p>
+
+<p>使用的时候再重申一遍</p>
+
+<h4>注意：</h4>
+
+<ol>
+    <li><strong>方案五是方案三的简化版；方案二，方案三（方案五），方案四是互斥的，在场景中只能使用一种，方案一的话是通用型的</strong></li>
+    <li><strong>因别名不能超过30个字符，所以在处理的时候尽量是简短</strong></li>
+</ol>
+
+<p>以下还是根据以上Egan所遇的问题去举例每种方案吧。</p>
+
+<ol>
+    <li>方案一 <strong>这里别名你不一定要跟字段表的关键词KeyWord一样，只需要你调用的方法正确即可，比如 mu.USER_SEX pr#getUserSex$SEX</strong>，别名部分<strong>pr#getUserSex$SEX</strong>的&quot;pr&quot;部分是bean在spring容器中的名字这里可以倒回去看字典对象类上面的标识<strong>@Component(&quot;pr&quot;)</strong>,然后&quot;getUserSex&quot; 是对应pr对象的对应方法</li>
+</ol>
+
+<pre>
+<code>@Autowired
+PubRestrictUtils pubRestrict
+@Autowired
+JdbcTemplate jdbcTemplate;
+
+String sql = "SELECT  mu.USER_ID,  mu.USER_NAME,  mu.USER_SEX \"pr#getUserSex$SEX\",  mu.AREA_TYPE \"pr#getAreaType$AREA_TYPE\",  mu.USER_STATE \"pr#getUserState$USER_STATE\" FROM MANA_USER mu";
+List&lt;Map&lt;String, Object&gt;&gt; dataList =jdbcTemplate.query(sql, new AliasElColumnMapRowMapper());</code></pre>
+
+<p>查询结果<code>List&lt;Map&lt;String, Object&gt;&gt;</code>对应的值:[{USER<em>ID=1,USER</em>NAME=张三,SEX=男,AREA<em>TYPE=城区,USER</em>STATE=正常},&hellip;]</p>
+
+<ol>
+    <li>方案二 <strong>这里别名你不一定要跟字段表的关键词KeyWord一样，只需要你调用的方法正确即可，比如 mu.USER_SEX getUserSex$SEX</strong>，别名部分<strong>getUserSex$SEX</strong>的&quot;getUserSex&quot;是对应传进去pubRestrict的方法</li>
+</ol>
+
+<pre>
+<code>@Autowired
+PubRestrictUtils pubRestrict
+@Autowired
+JdbcTemplate jdbcTemplate;
+
+String sql = "SELECT  mu.USER_ID,  mu.USER_NAME,  mu.USER_SEX \"getUserSex$SEX\",  mu.AREA_TYPE \"getAreaType$AREA_TYPE\",  mu.USER_STATE \"getUserState$USER_STATE\" FROM MANA_USER mu";
+List&lt;Map&lt;String, Object&gt;&gt; dataList =jdbcTemplate.query(sql, new AliasElColumnMapRowMapper(pubRestrict));</code></pre>
+
+<p>查询结果<code>List&lt;Map&lt;String, Object&gt;&gt;</code>对应的值:[{USER<em>ID=1,USER</em>NAME=张三,SEX=男,AREA<em>TYPE=城区,USER</em>STATE=正常},&hellip;]</p>
+
+<ol>
+    <li>方案三 <strong>这里别名你不一定要跟字段表的关键词KeyWord一样，只需要你调用的方法正确即可，比如 mu.USER<em>SEX USER</em>SEX$SEX</strong>，别名部分<strong>USER<em>SEX$SEX</em></strong><em>的&quot;USER</em>SEX&quot;是外层MAP的key然后SEX是前端展示的名字</li>
+</ol>
+
+<pre>
+<code>@Autowired
+PubRestrictUtils pubRestrict
+@Autowired
+JdbcTemplate jdbcTemplate;
+
+String sql = "SELECT  mu.USER_ID,  mu.USER_NAME,  mu.USER_SEX USER_SEX$SEX,  mu.AREA_TYPE AREA_TYPE$AREA_TYPE,  mu.USER_STATE USER_STATE$USER_STATE FROM MANA_USER mu";
+List&lt;Map&lt;String, Object&gt;&gt; dataList =jdbcTemplate.query(sql, new AliasElColumnMapRowMapper(pubRestrict.getPropertys()));</code></pre>
+
+<p>查询结果<code>List&lt;Map&lt;String, Object&gt;&gt;</code>对应的值:[{USER<em>ID=1,USER</em>NAME=张三,SEX=男,AREA<em>TYPE=城区,USER</em>STATE=正常},&hellip;]</p>
+
+<ol>
+    <li>
+        <p>方案五，这里就不讲方案五了，Egan同学的例子就是方案五了。</p>
+    </li>
+    <li>
+        <p>方案四。这里需要对字典对象做一些改动</p>
+    </li>
+</ol>
+
+<p>字典对象，这里把属性对象做成了单层的MAP</p>
+
+<pre>
+<code>/**
+ * 公共资源处理
+ * Created by egan on 2018/11/19.
+ */
+@Component("pr")
+public class PubRestrictUtils {
+
+    /**
+     *  字典表： Map&lt;SERIAL_NO, 中文名&gt;
+     */
+    private Map&lt;BigDecimal, Object&gt; propertys = null;
+
+    @Autowired
+    private PubRestrictDao pubRestrictDao;
+
+
+    @PostConstruct
+    public void loadRestrict(){
+        List&lt;Map&lt;String, Object&gt;&gt; list = pubRestrictDao.getPubRestrictAll();
+        if (list.isEmpty()){
+            return;
+        }
+        this.propertys = new HashMap&lt;BigDecimal, Object&gt;(list.size());
+        for (Map&lt;String, Object&gt; map : list){
+            this.propertys.put((BigDecimal) MapUtils.getObject(map,"SERIAL_NO"), MapUtils.getString(map,"DESC_CHINA") );
+        }
+    }
+
+    public Map&lt;BigDecimal, Object&gt; getPropertys() {
+        return propertys;
+    }
+}</code></pre>
+
+<p>对象使用, 别名展示同理 mu.USER_SEX k$SEX ,别名&ldquo;k$SEX&rdquo;中的&ldquo;k&rdquo;是固定值，&ldquo;SEX&rdquo;是需要展示的值</p>
+
+<pre>
+<code>@Autowired
+PubRestrictUtils pubRestrict
+@Autowired
+JdbcTemplate jdbcTemplate;
+
+String sql = "SELECT  mu.USER_ID,  mu.USER_NAME,  mu.USER_SEX k$SEX,  mu.AREA_TYPE k$AREA_TYPE,  mu.USER_STATE k$USER_STATE FROM MANA_USER mu";
+List&lt;Map&lt;String, Object&gt;&gt; dataList =jdbcTemplate.query(sql, new AliasElColumnMapRowMapper(pubRestrict.getPropertys()));</code></pre>
+
+<p>查询结果<code>List&lt;Map&lt;String, Object&gt;&gt;</code>对应的值:[{USER<em>ID=1,USER</em>NAME=张三,SEX=男,AREA<em>TYPE=城区,USER</em>STATE=正常},&hellip;]</p>
+
+<p>最后，安利一个全能支付Java开发工具包.优雅的轻量级支付模块集成支付对接支付整合（微信支付,支付宝,银联,友店,富友,跨境支付paypal,payoneer皮卡）app,扫码,即时到帐刷卡付条码付转账服务商模式、支持多种支付类型多支付账户，支付与业务完全剥离，简单几行代码即可实现支付，简单快速完成支付模块的开发，可轻松嵌入到任何系统里 https://www.oschina.net/p/pay-java-parent</p>
