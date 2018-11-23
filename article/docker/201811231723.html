@@ -1,0 +1,351 @@
+<div>
+    <div class="content" id="articleContent">
+        <p>叮铃铃,叮铃铃……, “服务器挂了，redis起不来了,Egan能不能帮忙看下吧”,电话里头的焦急的声音。</p>
+        <p>“我还在路上，能不能等会再说”，然后Egan就把电话给挂了。</p>
+        <p>滴答滴答……，时间过了好一会</p>
+        <p>叮铃铃,叮铃铃……,“在电脑前了吗？今天早上服务器突然进不去了，然后打阿里云客服说重启服务器，然后让老板把服务器重启之后，redis就起不来了”</p>
+        <p>“嗯嗯，了解了，你能不能把服务器账号密码发来一下，我排查下”，Egan回到，“用QQ说吧”。</p>
+        <p>下面差不多是简短的沟通记录吧</p>
+        <p>对方: <a href="https://my.oschina.net/u/934246">@Egan</a> xxx.xx.xxx.xx 这个是服务器地址，的redis你知道是安装在哪里吗？</p>
+        <p>对方: 服务器密码：xxxxxxx</p>
+        <p>Egan:好的</p>
+        <p>对方: 看docker里面有，但是起不来</p>
+        <p><img src="https://oscimg.oschina.net/oscnet/d0f89dd5ac14de56367c7335aa4b441c79e.jpg" alt="" class="zoom-in-cursor"> 刚开始我就看了这个主要启动没反应</p>
+        <p>对方: <a href="https://my.oschina.net/u/934246">@Egan</a> 帮忙看下</p>
+        <p>然后Egan就开始排查起来。</p>
+        <pre><code class="hljs bash">xxx@iZwz9isa7dpx6izf3br71hZ:~<span class="hljs-comment"># docker ps -a</span>
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                           PORTS               NAMES
+26a714a7ef63        ubuntu:14.04        <span class="hljs-string">"/bin/bash"</span>              19 months ago       Exited (0) 19 months ago                             proc_maraidb
+4c38df7be60a        redis               <span class="hljs-string">"docker-entrypoint..."</span>   19 months ago       Exited (1) 18 minutes ago                            redis_proc
+47b893baeba2        ubuntu:14.04        <span class="hljs-string">"/bin/bash"</span>              19 months ago       Exited (255) About an hour ago                       deadlock
+</code></pre>
+        <p>然后Egan也尝试了下，启动redis</p>
+        <pre><code class="hljs bash">xxx@iZwz9isa7dpx6izf3br71hZ:~<span class="hljs-comment"># docker start redis_proc</span>
+redis_proc
+</code></pre>
+        <p>这样发现没有可见的报错，又查看了下docker运行的容器，发现还是没有启动</p>
+        <pre><code class="hljs bash">xxx@iZwz9isa7dpx6izf3br71hZ:~<span class="hljs-comment"># docker ps</span>
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                           PORTS               NAMES
+</code></pre>
+        <p>想想查看下docker日志吧。然后就出来一堆的东西，应该是redis数据持久化一些乱七八糟的，具体可以看下面.不过最重要的问题就在最下面几行，日志里面也提供了解决方案。</p>
+        <pre><code class="hljs coffeescript">xxx@iZwz9isa7dpx6izf3br71hZ:~<span class="hljs-comment"># docker logs --tail 300 4c38df7be60a</span>
+<span class="hljs-number">196</span>:C <span class="hljs-number">19</span> Nov <span class="hljs-number">06</span>:<span class="hljs-number">26</span>:<span class="hljs-number">47.253</span> * AOF rewrite: <span class="hljs-number">1</span> MB <span class="hljs-keyword">of</span> memory used <span class="hljs-keyword">by</span> copy-<span class="hljs-literal">on</span>-write
+<span class="hljs-number">1</span>:M <span class="hljs-number">19</span> Nov <span class="hljs-number">06</span>:<span class="hljs-number">26</span>:<span class="hljs-number">47.285</span> * Background AOF rewrite terminated with success
+<span class="hljs-number">1</span>:M <span class="hljs-number">19</span> Nov <span class="hljs-number">06</span>:<span class="hljs-number">26</span>:<span class="hljs-number">47.285</span> * Residual parent diff successfully flushed to the rewritten AOF (<span class="hljs-number">0.00</span> MB)
+<span class="hljs-number">1</span>:M <span class="hljs-number">19</span> Nov <span class="hljs-number">06</span>:<span class="hljs-number">26</span>:<span class="hljs-number">47.285</span> * Background AOF rewrite finished successfully
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.547</span> * Starting automatic rewriting <span class="hljs-keyword">of</span> AOF <span class="hljs-literal">on</span> <span class="hljs-number">4810</span>% growth
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.548</span> * Background append only file rewriting started <span class="hljs-keyword">by</span> pid <span class="hljs-number">197</span>
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.668</span> * AOF rewrite child asks to stop sending diffs.
+<span class="hljs-number">197</span>:C <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.668</span> * Parent agreed to stop sending diffs. Finalizing AOF...
+<span class="hljs-number">197</span>:C <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.668</span> * Concatenating <span class="hljs-number">0.01</span> MB <span class="hljs-keyword">of</span> AOF diff received <span class="hljs-keyword">from</span> parent.
+<span class="hljs-number">197</span>:C <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.673</span> * SYNC append only file rewrite performed
+<span class="hljs-number">197</span>:C <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.674</span> * AOF rewrite: <span class="hljs-number">1</span> MB <span class="hljs-keyword">of</span> memory used <span class="hljs-keyword">by</span> copy-<span class="hljs-literal">on</span>-write
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.748</span> * Background AOF rewrite terminated with success
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.748</span> * Residual parent diff successfully flushed to the rewritten AOF (<span class="hljs-number">0.00</span> MB)
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">17</span>:<span class="hljs-number">02.748</span> * Background AOF rewrite finished successfully
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.498</span> * Starting automatic rewriting <span class="hljs-keyword">of</span> AOF <span class="hljs-literal">on</span> <span class="hljs-number">3252</span>% growth
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.500</span> * Background append only file rewriting started <span class="hljs-keyword">by</span> pid <span class="hljs-number">198</span>
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.552</span> * AOF rewrite child asks to stop sending diffs.
+<span class="hljs-number">198</span>:C <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.552</span> * Parent agreed to stop sending diffs. Finalizing AOF...
+<span class="hljs-number">198</span>:C <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.552</span> * Concatenating <span class="hljs-number">0.00</span> MB <span class="hljs-keyword">of</span> AOF diff received <span class="hljs-keyword">from</span> parent.
+<span class="hljs-number">198</span>:C <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.552</span> * SYNC append only file rewrite performed
+<span class="hljs-number">198</span>:C <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.553</span> * AOF rewrite: <span class="hljs-number">0</span> MB <span class="hljs-keyword">of</span> memory used <span class="hljs-keyword">by</span> copy-<span class="hljs-literal">on</span>-write
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.600</span> * Background AOF rewrite terminated with success
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.600</span> * Residual parent diff successfully flushed to the rewritten AOF (<span class="hljs-number">0.00</span> MB)
+<span class="hljs-number">1</span>:M <span class="hljs-number">20</span> Nov <span class="hljs-number">08</span>:<span class="hljs-number">01</span>:<span class="hljs-number">28.600</span> * Background AOF rewrite finished successfully
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.099</span> * Starting automatic rewriting <span class="hljs-keyword">of</span> AOF <span class="hljs-literal">on</span> <span class="hljs-number">2841</span>% growth
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.100</span> * Background append only file rewriting started <span class="hljs-keyword">by</span> pid <span class="hljs-number">199</span>
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.139</span> * AOF rewrite child asks to stop sending diffs.
+<span class="hljs-number">199</span>:C <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.139</span> * Parent agreed to stop sending diffs. Finalizing AOF...
+<span class="hljs-number">199</span>:C <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.139</span> * Concatenating <span class="hljs-number">0.00</span> MB <span class="hljs-keyword">of</span> AOF diff received <span class="hljs-keyword">from</span> parent.
+<span class="hljs-number">199</span>:C <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.139</span> * SYNC append only file rewrite performed
+<span class="hljs-number">199</span>:C <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.140</span> * AOF rewrite: <span class="hljs-number">0</span> MB <span class="hljs-keyword">of</span> memory used <span class="hljs-keyword">by</span> copy-<span class="hljs-literal">on</span>-write
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.200</span> * Background AOF rewrite terminated with success
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.200</span> * Residual parent diff successfully flushed to the rewritten AOF (<span class="hljs-number">0.00</span> MB)
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">03</span>:<span class="hljs-number">09</span>:<span class="hljs-number">02.200</span> * Background AOF rewrite finished successfully
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.565</span> * Starting automatic rewriting <span class="hljs-keyword">of</span> AOF <span class="hljs-literal">on</span> <span class="hljs-number">6107</span>% growth
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.567</span> * Background append only file rewriting started <span class="hljs-keyword">by</span> pid <span class="hljs-number">200</span>
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.607</span> * AOF rewrite child asks to stop sending diffs.
+<span class="hljs-number">200</span>:C <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.607</span> * Parent agreed to stop sending diffs. Finalizing AOF...
+<span class="hljs-number">200</span>:C <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.607</span> * Concatenating <span class="hljs-number">0.00</span> MB <span class="hljs-keyword">of</span> AOF diff received <span class="hljs-keyword">from</span> parent.
+<span class="hljs-number">200</span>:C <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.607</span> * SYNC append only file rewrite performed
+<span class="hljs-number">200</span>:C <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.608</span> * AOF rewrite: <span class="hljs-number">0</span> MB <span class="hljs-keyword">of</span> memory used <span class="hljs-keyword">by</span> copy-<span class="hljs-literal">on</span>-write
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.667</span> * Background AOF rewrite terminated with success
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.667</span> * Residual parent diff successfully flushed to the rewritten AOF (<span class="hljs-number">0.00</span> MB)
+<span class="hljs-number">1</span>:M <span class="hljs-number">21</span> Nov <span class="hljs-number">09</span>:<span class="hljs-number">34</span>:<span class="hljs-number">00.667</span> * Background AOF rewrite finished successfully
+<span class="hljs-number">1</span>:M <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.083</span> * Starting automatic rewriting <span class="hljs-keyword">of</span> AOF <span class="hljs-literal">on</span> <span class="hljs-number">4632</span>% growth
+<span class="hljs-number">1</span>:M <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.084</span> * Background append only file rewriting started <span class="hljs-keyword">by</span> pid <span class="hljs-number">201</span>
+<span class="hljs-number">1</span>:M <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.126</span> * AOF rewrite child asks to stop sending diffs.
+<span class="hljs-number">201</span>:C <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.126</span> * Parent agreed to stop sending diffs. Finalizing AOF...
+<span class="hljs-number">201</span>:C <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.126</span> * Concatenating <span class="hljs-number">0.00</span> MB <span class="hljs-keyword">of</span> AOF diff received <span class="hljs-keyword">from</span> parent.
+<span class="hljs-number">201</span>:C <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.126</span> * SYNC append only file rewrite performed
+<span class="hljs-number">201</span>:C <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.127</span> * AOF rewrite: <span class="hljs-number">0</span> MB <span class="hljs-keyword">of</span> memory used <span class="hljs-keyword">by</span> copy-<span class="hljs-literal">on</span>-write
+<span class="hljs-number">1</span>:M <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.184</span> * Background AOF rewrite terminated with success
+<span class="hljs-number">1</span>:M <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.184</span> * Residual parent diff successfully flushed to the rewritten AOF (<span class="hljs-number">0.00</span> MB)
+<span class="hljs-number">1</span>:M <span class="hljs-number">22</span> Nov <span class="hljs-number">05</span>:<span class="hljs-number">52</span>:<span class="hljs-number">48.184</span> * Background AOF rewrite finished successfully
+<span class="hljs-number">1</span>:M <span class="hljs-number">22</span> Nov <span class="hljs-number">20</span>:<span class="hljs-number">10</span>:<span class="hljs-number">56.034</span> * Asynchronous AOF fsync <span class="hljs-keyword">is</span> taking too long (disk <span class="hljs-keyword">is</span> busy?). Writing the AOF buffer without waiting <span class="hljs-keyword">for</span> fsync to complete, <span class="hljs-keyword">this</span> may slow down Redis.
+<span class="hljs-number">1</span>:M <span class="hljs-number">22</span> Nov <span class="hljs-number">20</span>:<span class="hljs-number">32</span>:<span class="hljs-number">01.494</span> * Asynchronous AOF fsync <span class="hljs-keyword">is</span> taking too long (disk <span class="hljs-keyword">is</span> busy?). Writing the AOF buffer without waiting <span class="hljs-keyword">for</span> fsync to complete, <span class="hljs-keyword">this</span> may slow down Redis.
+<span class="hljs-number">1</span>:M <span class="hljs-number">23</span> Nov <span class="hljs-number">00</span>:<span class="hljs-number">16</span>:<span class="hljs-number">56.059</span> * Asynchronous AOF fsync <span class="hljs-keyword">is</span> taking too long (disk <span class="hljs-keyword">is</span> busy?). Writing the AOF buffer without waiting <span class="hljs-keyword">for</span> fsync to complete, <span class="hljs-keyword">this</span> may slow down Redis.
+<span class="hljs-number">1</span>:M <span class="hljs-number">23</span> Nov <span class="hljs-number">00</span>:<span class="hljs-number">29</span>:<span class="hljs-number">00.010</span> * Asynchronous AOF fsync <span class="hljs-keyword">is</span> taking too long (disk <span class="hljs-keyword">is</span> busy?). Writing the AOF buffer without waiting <span class="hljs-keyword">for</span> fsync to complete, <span class="hljs-keyword">this</span> may slow down Redis.
+                _._
+           _.-`<span class="javascript"></span>`__ <span class="hljs-string">''</span>-._
+      _.-`<span class="javascript"></span>`    `<span class="javascript">.  </span>`_.  <span class="hljs-string">''</span>-._           Redis <span class="hljs-number">3.2</span><span class="hljs-number">.8</span> (<span class="hljs-number">00000000</span>/<span class="hljs-number">0</span>) <span class="hljs-number">64</span> bit
+  .-`<span class="javascript"></span>` .-```<span class="javascript">.  </span>```\/    _.,_ <span class="hljs-string">''</span>-._
+ (    <span class="hljs-string">'      ,       .-`  | `,    )     Running in standalone mode
+ |`-._`-...-` __...-.``-._|'</span>`<span class="javascript"> _.-<span class="hljs-string">'|     Port: 6379
+ |    </span></span>`-._   `<span class="javascript"><span class="hljs-string">._    /     _.-'</span>    |     PID: <span class="hljs-number">1</span>
+  </span>`-._    `<span class="javascript">-._  </span>`-./  _.-<span class="hljs-string">'    _.-'</span>
+ |`<span class="javascript">-._</span>`-._    `<span class="javascript">-.__.-<span class="hljs-string">'    _.-'</span>_.-<span class="hljs-string">'|
+ |    </span></span>`-._`<span class="javascript"><span class="hljs-string">-._        _.-'</span>_.-<span class="hljs-string">'    |           http://redis.io
+  </span></span>`-._    `<span class="javascript"><span class="hljs-string">-._</span></span>`-.__.-<span class="hljs-string">'_.-'</span>    _.-<span class="hljs-string">'
+ |`-._`-._    `-.__.-'</span>    _.-<span class="hljs-string">'_.-'</span>|
+ |    `<span class="javascript"><span class="hljs-string">-._</span></span>`-._        _.-<span class="hljs-string">'_.-'</span>    |
+  `<span class="javascript"><span class="hljs-string">-._    </span></span>`-._`<span class="javascript"><span class="hljs-string">-.__.-'</span>_.-<span class="hljs-string">'    _.-'</span>
+      </span>`-._    `<span class="javascript">-.__.-<span class="hljs-string">'    _.-'</span>
+          </span>`-._        _.-<span class="hljs-string">'
+              `-.__.-'</span>
+
+<span class="hljs-number">1</span>:M <span class="hljs-number">23</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">33</span>:<span class="hljs-number">42.484</span> <span class="hljs-comment"># WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.</span>
+<span class="hljs-number">1</span>:M <span class="hljs-number">23</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">33</span>:<span class="hljs-number">42.491</span> <span class="hljs-comment"># Server started, Redis version 3.2.8</span>
+<span class="hljs-number">1</span>:M <span class="hljs-number">23</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">33</span>:<span class="hljs-number">42.491</span> <span class="hljs-comment"># WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.</span>
+<span class="hljs-number">1</span>:M <span class="hljs-number">23</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">33</span>:<span class="hljs-number">42.491</span> <span class="hljs-comment"># WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.</span>
+<span class="hljs-number">1</span>:M <span class="hljs-number">23</span> Nov <span class="hljs-number">01</span>:<span class="hljs-number">33</span>:<span class="hljs-number">43.534</span> <span class="hljs-comment"># Bad file format reading the append only file: make a backup of your AOF file, then use ./redis-check-aof --fix &lt;filename&gt;</span>
+</code></pre>
+        <p>主要是4个问题，导致redis启动不了的主要是最后一行。“Bad file format reading the append only file: make a backup of your AOF file, then use ./redis-check-aof --fix ” ，翻译一下<code>读取仅追加文件的错误文件格式：备份AOF文件，然后使用./redis-check-a of--fix&lt;filename&gt;</code>,有一个AOF的备份文件，通过这个<code>./redis-check-a of--fix&lt;filename&gt;</code>还原，查了一下redis的备份文件为“appendonly.aof”.</p>
+        <p>然后前面三项主要是警告。那我们都来一项一项进行处理。</p>
+        <p>第一个警告：<strong>WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.</strong></p>
+        <pre><code class="hljs makefile"><span class="hljs-section">方法1: 临时设置生效: sysctl -w net.core.somaxconn = 511</span>
+<span class="hljs-section">方法2: 永久生效: 修改/etc/sysctl.conf文件，增加一行</span>
+net.core.somaxconn= 511
+然后执行命令
+sysctl -p
+</code></pre>
+        <p>第二个警告：<strong>WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.</strong></p>
+        <pre><code class="hljs makefile">解决方案
+<span class="hljs-section">方法1: 临时设置生效: sysctl -w vm.overcommit_memory = 1</span>
+<span class="hljs-section">方法2: 永久生效: 修改/etc/sysctl.conf文件，增加一行</span>
+vm.overcommit_memory = 1
+然后执行命令
+sysctl -p
+
+<span class="hljs-section">补充: </span>
+overcommit_memory参数说明：
+设置内存分配策略（可选，根据服务器的实际情况进行设置）
+/proc/sys/vm/overcommit_memory
+可选值：0、1、2。
+0， 表示内核将检查是否有足够的可用内存供应用进程使用；如果有足够的可用内存，内存申请允许；否则，内存申请失败，并把错误返回给应用进程。
+1， 表示内核允许分配所有的物理内存，而不管当前的内存状态如何。
+2， 表示内核允许分配超过所有物理内存和交换空间总和的内存
+注意：redis在dump数据的时候，会fork出一个子进程，理论上child进程所占用的内存和parent是一样的，比如parent占用的内存为8G，这个时候也要同样分配8G的内存给child,如果内存无法负担，往往会造成redis服务器的down机或者IO负载过高，效率下降。所以这里比较优化的内存分配策略应该设置为 1（表示内核允许分配所有的物理内存，而不管当前的内存状态如何）。
+</code></pre>
+        <p>第三个警告：<strong>WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.</strong></p>
+        <pre><code class="hljs ruby">解决方案：上面也提供了解决方案，<span class="hljs-string">'echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled'</span>  这一行，直接执行就好了，但是这样的话，只是当前生效而已，如果电脑重启之后，又是需要重新设置的，所以把这个命令加入到启动过程中。
+编辑/etc/rc.local，加入echo never &gt; <span class="hljs-regexp">/sys/kernel</span><span class="hljs-regexp">/mm/transparent</span>_hugepage/enabled。
+</code></pre>
+        <p>好了，前面三个警告都解决了.</p>
+        <p>重点问题来了，docker里面的redis如何寻找到备份文件（appendonly.aof）呢？搜索？那肯定很慢，找了找，docker有提供容器挂载目录存放的位置，找到位置即可</p>
+        <p>执行命令：<code>docker inspect [容器]</code> 然后出来一堆的东西，</p>
+        <pre><code class="hljs bash">xxx@iZwz9isa7dpx6izf3br71hZ:~<span class="hljs-comment"># docker inspect 4c38df7be60a</span>
+[
+    {
+        <span class="hljs-string">"Id"</span>: <span class="hljs-string">"4c38df7be60ac0517961903351ecda36566f7150b39b7d29cc1ccf2665d6eb7e"</span>,
+        <span class="hljs-string">"Created"</span>: <span class="hljs-string">"2017-04-13T12:33:15.036327978Z"</span>,
+        <span class="hljs-string">"Path"</span>: <span class="hljs-string">"docker-entrypoint.sh"</span>,
+        <span class="hljs-string">"Args"</span>: [
+            <span class="hljs-string">"redis-server"</span>,
+            <span class="hljs-string">"--appendonly"</span>,
+            <span class="hljs-string">"yes"</span>
+        ],
+        <span class="hljs-string">"State"</span>: {
+            <span class="hljs-string">"Status"</span>: <span class="hljs-string">"exited"</span>,
+            <span class="hljs-string">"Running"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"Paused"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"Restarting"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"OOMKilled"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"Dead"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"Pid"</span>: 0,
+            <span class="hljs-string">"ExitCode"</span>: 1,
+            <span class="hljs-string">"Error"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"StartedAt"</span>: <span class="hljs-string">"2018-11-23T03:04:00.909539222Z"</span>,
+            <span class="hljs-string">"FinishedAt"</span>: <span class="hljs-string">"2018-11-23T03:04:01.961967557Z"</span>
+        },
+        <span class="hljs-string">"Image"</span>: <span class="hljs-string">"sha256:83d6014ac5c8193fa43dd16b161f0e524141800f10cff44d7bad3b637991cf16"</span>,
+        <span class="hljs-string">"ResolvConfPath"</span>: <span class="hljs-string">"/var/lib/docker/containers/4c38df7be60ac0517961903351ecda36566f7150b39b7d29cc1ccf2665d6eb7e/resolv.conf"</span>,
+        <span class="hljs-string">"HostnamePath"</span>: <span class="hljs-string">"/var/lib/docker/containers/4c38df7be60ac0517961903351ecda36566f7150b39b7d29cc1ccf2665d6eb7e/hostname"</span>,
+        <span class="hljs-string">"HostsPath"</span>: <span class="hljs-string">"/var/lib/docker/containers/4c38df7be60ac0517961903351ecda36566f7150b39b7d29cc1ccf2665d6eb7e/hosts"</span>,
+        <span class="hljs-string">"LogPath"</span>: <span class="hljs-string">"/var/lib/docker/containers/4c38df7be60ac0517961903351ecda36566f7150b39b7d29cc1ccf2665d6eb7e/4c38df7be60ac0517961903351ecda36566f7150b39b7d29cc1ccf2665d6eb7e-json.log"</span>,
+        <span class="hljs-string">"Name"</span>: <span class="hljs-string">"/redis_proc"</span>,
+        <span class="hljs-string">"RestartCount"</span>: 0,
+        <span class="hljs-string">"Driver"</span>: <span class="hljs-string">"aufs"</span>,
+        <span class="hljs-string">"MountLabel"</span>: <span class="hljs-string">""</span>,
+        <span class="hljs-string">"ProcessLabel"</span>: <span class="hljs-string">""</span>,
+        <span class="hljs-string">"AppArmorProfile"</span>: <span class="hljs-string">""</span>,
+        <span class="hljs-string">"ExecIDs"</span>: null,
+        <span class="hljs-string">"HostConfig"</span>: {
+            <span class="hljs-string">"Binds"</span>: null,
+            <span class="hljs-string">"ContainerIDFile"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"LogConfig"</span>: {
+                <span class="hljs-string">"Type"</span>: <span class="hljs-string">"json-file"</span>,
+                <span class="hljs-string">"Config"</span>: {}
+            },
+            <span class="hljs-string">"NetworkMode"</span>: <span class="hljs-string">"default"</span>,
+            <span class="hljs-string">"PortBindings"</span>: {
+                <span class="hljs-string">"6379/tcp"</span>: [
+                    {
+                        <span class="hljs-string">"HostIp"</span>: <span class="hljs-string">""</span>,
+                        <span class="hljs-string">"HostPort"</span>: <span class="hljs-string">"16379"</span>
+                    }
+                ]
+            },
+            <span class="hljs-string">"RestartPolicy"</span>: {
+                <span class="hljs-string">"Name"</span>: <span class="hljs-string">"no"</span>,
+                <span class="hljs-string">"MaximumRetryCount"</span>: 0
+            },
+            <span class="hljs-string">"AutoRemove"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"VolumeDriver"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"VolumesFrom"</span>: null,
+            <span class="hljs-string">"CapAdd"</span>: null,
+            <span class="hljs-string">"CapDrop"</span>: null,
+            <span class="hljs-string">"Dns"</span>: [],
+            <span class="hljs-string">"DnsOptions"</span>: [],
+            <span class="hljs-string">"DnsSearch"</span>: [],
+            <span class="hljs-string">"ExtraHosts"</span>: null,
+            <span class="hljs-string">"GroupAdd"</span>: null,
+            <span class="hljs-string">"IpcMode"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"Cgroup"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"Links"</span>: null,
+            <span class="hljs-string">"OomScoreAdj"</span>: 0,
+            <span class="hljs-string">"PidMode"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"Privileged"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"PublishAllPorts"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"ReadonlyRootfs"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"SecurityOpt"</span>: null,
+            <span class="hljs-string">"UTSMode"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"UsernsMode"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"ShmSize"</span>: 67108864,
+            <span class="hljs-string">"Runtime"</span>: <span class="hljs-string">"runc"</span>,
+            <span class="hljs-string">"ConsoleSize"</span>: [
+                0,
+                0
+            ],
+            <span class="hljs-string">"Isolation"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"CpuShares"</span>: 0,
+            <span class="hljs-string">"Memory"</span>: 0,
+            <span class="hljs-string">"NanoCpus"</span>: 0,
+            <span class="hljs-string">"CgroupParent"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"BlkioWeight"</span>: 0,
+            <span class="hljs-string">"BlkioWeightDevice"</span>: null,
+            <span class="hljs-string">"BlkioDeviceReadBps"</span>: null,
+            <span class="hljs-string">"BlkioDeviceWriteBps"</span>: null,
+            <span class="hljs-string">"BlkioDeviceReadIOps"</span>: null,
+            <span class="hljs-string">"BlkioDeviceWriteIOps"</span>: null,
+            <span class="hljs-string">"CpuPeriod"</span>: 0,
+            <span class="hljs-string">"CpuQuota"</span>: 0,
+            <span class="hljs-string">"CpuRealtimePeriod"</span>: 0,
+            <span class="hljs-string">"CpuRealtimeRuntime"</span>: 0,
+            <span class="hljs-string">"CpusetCpus"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"CpusetMems"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"Devices"</span>: [],
+            <span class="hljs-string">"DiskQuota"</span>: 0,
+            <span class="hljs-string">"KernelMemory"</span>: 0,
+            <span class="hljs-string">"MemoryReservation"</span>: 0,
+            <span class="hljs-string">"MemorySwap"</span>: 0,
+            <span class="hljs-string">"MemorySwappiness"</span>: -1,
+            <span class="hljs-string">"OomKillDisable"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"PidsLimit"</span>: 0,
+            <span class="hljs-string">"Ulimits"</span>: null,
+            <span class="hljs-string">"CpuCount"</span>: 0,
+            <span class="hljs-string">"CpuPercent"</span>: 0,
+            <span class="hljs-string">"IOMaximumIOps"</span>: 0,
+            <span class="hljs-string">"IOMaximumBandwidth"</span>: 0
+        },
+        <span class="hljs-string">"GraphDriver"</span>: {
+            <span class="hljs-string">"Name"</span>: <span class="hljs-string">"aufs"</span>,
+            <span class="hljs-string">"Data"</span>: null
+        },
+        <span class="hljs-string">"Mounts"</span>: [
+            {
+                <span class="hljs-string">"Type"</span>: <span class="hljs-string">"volume"</span>,
+                <span class="hljs-string">"Name"</span>: <span class="hljs-string">"94dbaf4fad236d5dc94f2f825202eb279d0d3217a47cb050ec51eba1b5ff2d51"</span>,
+                <span class="hljs-string">"Source"</span>: <span class="hljs-string">"/var/lib/docker/volumes/94dbaf4fad236d5dc94f2f825202eb279d0d3217a47cb050ec51eba1b5ff2d51/_data"</span>,
+                <span class="hljs-string">"Destination"</span>: <span class="hljs-string">"/data"</span>,
+                <span class="hljs-string">"Driver"</span>: <span class="hljs-string">"local"</span>,
+                <span class="hljs-string">"Mode"</span>: <span class="hljs-string">""</span>,
+                <span class="hljs-string">"RW"</span>: <span class="hljs-literal">true</span>,
+                <span class="hljs-string">"Propagation"</span>: <span class="hljs-string">""</span>
+            }
+        ],
+        <span class="hljs-string">"Config"</span>: {
+            <span class="hljs-string">"Hostname"</span>: <span class="hljs-string">"4c38df7be60a"</span>,
+            <span class="hljs-string">"Domainname"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"User"</span>: <span class="hljs-string">""</span>,
+            <span class="hljs-string">"AttachStdin"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"AttachStdout"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"AttachStderr"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"ExposedPorts"</span>: {
+                <span class="hljs-string">"6379/tcp"</span>: {}
+            },
+            <span class="hljs-string">"Tty"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"OpenStdin"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"StdinOnce"</span>: <span class="hljs-literal">false</span>,
+            <span class="hljs-string">"Env"</span>: [
+                <span class="hljs-string">"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"</span>,
+                <span class="hljs-string">"GOSU_VERSION=1.7"</span>,
+                <span class="hljs-string">"REDIS_VERSION=3.2.8"</span>,
+                <span class="hljs-string">"REDIS_DOWNLOAD_URL=http://download.redis.io/releases/redis-3.2.8.tar.gz"</span>,
+                <span class="hljs-string">"REDIS_DOWNLOAD_SHA1=6780d1abb66f33a97aad0edbe020403d0a15b67f"</span>
+            ],
+            <span class="hljs-string">"Cmd"</span>: [
+                <span class="hljs-string">"redis-server"</span>,
+                <span class="hljs-string">"--appendonly"</span>,
+                <span class="hljs-string">"yes"</span>
+            ],
+            <span class="hljs-string">"Image"</span>: <span class="hljs-string">"redis"</span>,
+            <span class="hljs-string">"Volumes"</span>: {
+                <span class="hljs-string">"/data"</span>: {}
+            },
+            <span class="hljs-string">"WorkingDir"</span>: <span class="hljs-string">"/data"</span>,
+            <span class="hljs-string">"Entrypoint"</span>: [
+                <span class="hljs-string">"docker-entrypoint.sh"</span>
+            ],
+            <span class="hljs-string">"OnBuild"</span>: null,
+            <span class="hljs-string">"Labels"</span>: {}
+        }
+	.....
+]
+</code></pre>
+        <p>总之很长很长，这里直接指出吧</p>
+        <p><img src="https://oscimg.oschina.net/oscnet/c7baf54e9345b24259a38be2e081d79fbde.jpg" alt="" class="zoom-in-cursor"></p>
+        <p>红框部分目录，然后直接复制，然后 cd /var/lib/docker/volumes/94dbaf4fad236d5dc94f2f825202eb279d0d3217a47cb050ec51eba1b5ff2d51/_data，进行打开，你会发现就在这里
+            <img src="https://oscimg.oschina.net/oscnet/dc0e5e45e0cad20b6312b967cf6835a93ea.jpg" alt="" class="zoom-in-cursor"></p>
+        <p>好了，备份文件我们找到了，那么redis安装运行还有恢复工具(redis-check-aof）。同理在这里寻找，找到环境选项来
+            <img src="https://oscimg.oschina.net/oscnet/d18d9daa7051e81d3b667567a1797dc2c8d.jpg" alt="" class="zoom-in-cursor"></p>
+        <p>红框部分的几个目录。一个一个找过去。功夫不顾有心人，找到了，在 /usr/local/bin目录
+            <img src="https://oscimg.oschina.net/oscnet/c871643cd7bb7db11127e79263b072f5a1b.jpg" alt="" class="zoom-in-cursor"></p>
+        <p>然后执行命令  <strong>./redis-check-aof --fix  /var/lib/docker/containers/4c38df7be60ac0517961903351ecda36566f7150b39b7d29cc1ccf2665d6eb7e/appendonly.aof</strong>
+            然后会出现"Continue? [y/N]:"让你是否继续，你输入Y就可以了。</p>
+        <pre><code class="hljs bash">xxx@iZwz9isa7dpx6izf3br71hZ:/usr/<span class="hljs-built_in">local</span>/bin<span class="hljs-comment"># ./redis-check-aof --fix  /var/lib/docker/containers/4c38df7be60ac0517961903351ecda36566f7150b39b7d29cc1ccf2665d6eb7e/appendonly.aof</span>
+0x         366c32f: Expected prefix <span class="hljs-string">'*'</span>, got: <span class="hljs-string">'
+AOF analyzed: size=57066334, ok_up_to=57066287, diff=47
+This will shrink the AOF from 57066334 bytes, with 47 bytes, to 57066287 bytes
+Continue? [y/N]: y
+Successfully truncated AOF
+</span></code></pre>
+        <p>大功告成，Egag内心小喜，赶紧运行执行了docker 启动redis命令</p>
+        <pre><code class="hljs bash">xxx@iZwz9isa7dpx6izf3br71hZ:/usr/<span class="hljs-built_in">local</span>/bin<span class="hljs-comment"># docker start redis_proc</span>
+redis_proc
+root@iZwz9isa7dpx6izf3br71hZ:/usr/<span class="hljs-built_in">local</span>/bin<span class="hljs-comment"># docker ps</span>
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                     NAMES
+4c38df7be60a        redis               <span class="hljs-string">"docker-entrypoint..."</span>   19 months ago       Up 5 seconds          0.0.0.0:16379-&gt;6379/tcp   redis_proc
+
+</code></pre>
+        <p>好了，redis成功起来了、</p>
+        <pre><code class="hljs http"><span class="hljs-attribute">Egan</span>: redis起来了,我整理下这个问题的处理，待会发给你
+
+<span class="ruby">对方<span class="hljs-symbol">:OK</span>
+</span></code></pre>
+        <p>就这样，好了这篇文章就这样来了</p>
+
+    </div>
+<p>最后，安利一个全能支付Java开发工具包.优雅的轻量级支付模块集成支付对接支付整合（微信支付,支付宝,银联,友店,富友,跨境支付paypal,payoneer皮卡）app,扫码,即时到帐刷卡付条码付转账服务商模式、支持多种支付类型多支付账户，支付与业务完全剥离，简单几行代码即可实现支付，简单快速完成支付模块的开发，可轻松嵌入到任何系统里 https://www.oschina.net/p/pay-java-parent</p>
+</div>

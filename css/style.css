@@ -346,3 +346,8 @@ a {
 #article-content{
     padding-top: 3rem;
 }
+.content img{
+    height: auto !important;
+    margin: auto;
+    max-width: 100%;
+}

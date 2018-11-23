@@ -4,6 +4,13 @@
   "url": "/article/index.html",
   "rows": [
     {
+      "id": "201811231723",
+      "file": "html",
+      "title": "记一次突然宕机重启服务器导致docker中redis无法启动的问题解决",
+      "desc": "叮铃铃,叮铃铃……, “服务器挂了，redis起不来了,Egan能不能帮忙看下吧”,电话里头的焦急的声音。“我还在路上，能不能等会再说”，然后Egan就把电话给挂了。",
+      "tag":"<a href=\"%s/article/index.html?type=docker&title=docker\">docker</a>",
+      "createTime":"2018-11-23"
+    }, {
       "id": "201811192025",
       "file":"html",
       "title": "jdbc的如何优雅的解决字典表数据转化",
