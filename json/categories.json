@@ -6,13 +6,17 @@
       "title":"Maven",
       "num": 1
     },{
+      "url":"/article/index.html?type=docker",
+      "title":"Docker",
+      "num": 1
+    },{
       "url":"/article/index.html?type=db",
       "title":"数据库",
       "num": 1
     },{
       "url":"/article/index.html?type=java",
       "title":"Java",
-      "num": 3
+      "num": 4
     },{
       "url":"/article/index.html?type=nginx",
       "title":"Nginx",
@@ -24,7 +28,7 @@
     }, {
       "url":"/article/index.html?type=life",
       "title":"个人博客",
-      "num": 1
+      "num": 2
     }
   ]
 
