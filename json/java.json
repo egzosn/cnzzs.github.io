@@ -26,7 +26,7 @@
       "createTime":"2016-07-23"
     }, {
       "id": "20160628235220",
-      "file": "md",
+      "file": "html",
       "title": "整合支付模块（微信支付，支付宝）",
       "desc": " 整合支付模块（微信支付，支付宝） 实现动态配置，支付统一入口管理，对不同支付对应不同处理器，实现多配置支付多支付宝支付整合",
       "tag":"<a href=\"%s/article/index.html?type=java&title=Java\">Java</a>",
