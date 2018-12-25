@@ -41,6 +41,7 @@
         for (var i = 0; i < len; i++){
             html += '<span class="letter">'+name.charAt(i)+'</span>';
 		}
+        document.title="亲爱的"+name+",圣诞节快乐！";
 		document.getElementById("q").innerHTML=html;
 	}
 

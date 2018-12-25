@@ -27,7 +27,8 @@ var S = {
         }else {
             action = decodeURIComponent(decodeURIComponent(action)).substring(i + 3)
         }
-        S.UI.simulate('#circle|亲爱的|'+ action +'|现在是|北京时间|#time|我将用|我的方式|表达对您|圣诞祝福|#countdown 5|#show', 3000);
+        document.title="亲爱的"+action+",圣诞节快乐！";
+        S.UI.simulate('#circle|亲爱的|'+ action +'|现在是|北京时间|#time|我将用|我的方式|表达对你|圣诞祝福|#countdown 5|#show', 3000);
 
         S.Drawing.loop(function () {
             S.Shape.render();
