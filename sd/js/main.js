@@ -15,8 +15,33 @@
 		box = merrywrap.querySelector( '.giftbox' ),
 		step = 1, stepTimes = [1000,1000,2000,2000];
 
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            var strs = str.split("&");
+            for ( var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
 	function init() {
 		box.addEventListener( 'click', runAnimation );
+        var Request=new GetRequest();
+        var name = Request["a"];
+        if (!name){
+        	name = "你";
+		}else {
+            name = decodeURIComponent(decodeURIComponent(name));
+		}
+		var len = name.length;
+        var html = '<span class="letter">亲</span>            <span class="letter">爱</span>            <span class="letter">的</span>'
+        for (var i = 0; i < len; i++){
+            html += '<span class="letter">'+name.charAt(i)+'</span>';
+		}
+		document.getElementById("q").innerHTML=html;
 	}
 
 	function runAnimation() {

@@ -21,13 +21,13 @@ var S = {
         S.Drawing.init('.canvas');
         document.body.classList.add('body--ready');
 
-        if (i !== -1) {
-            S.UI.simulate(decodeURI(action).substring(i + 3));
-        } else {
-             S.UI.simulate('#circle|亲爱的|XX|现在是|北京时间|#time|我将用|我的方式|表达对您|圣诞祝福|#countdown 5|#show', 3000);
-
+        if (i == -1) {
+            action = "你"
            // S.UI.simulate('#show', 3000);
+        }else {
+            action = decodeURIComponent(decodeURIComponent(action)).substring(i + 3)
         }
+        S.UI.simulate('#circle|亲爱的|'+ action +'|现在是|北京时间|#time|我将用|我的方式|表达对您|圣诞祝福|#countdown 5|#show', 3000);
 
         S.Drawing.loop(function () {
             S.Shape.render();
@@ -36,7 +36,11 @@ var S = {
 };
 
 function show() {
-    window.location.href = "2.html";
+    if(location.search){
+        window.location.href = "2.html"  + location.search;
+        return;
+    }
+    window.location.href = "2.html"  ;
 }
 
 

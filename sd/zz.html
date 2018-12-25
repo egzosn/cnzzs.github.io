@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>制作圣诞祝福</title>
+</head>
+<body>
+输入你要祝福的人：<input type="text" id="a"><br/>
+
+<button onclick="submit(1)">生成</button>
+<button onclick="submit(2)">直接跳转</button>
+<br/>
+
+<div id="text"></div>
+<script type="text/javascript">
+
+    function submit(i) {
+        var str = "http://www.egzosn.com/sd/index.html?a=" +encodeURIComponent(encodeURIComponent(document.getElementById("a").value))
+        if(i== 1){
+            document.getElementById("text").innerHTML='<a href="'+str+'">'+str+'</a>';
+            return
+        }
+        location.href= str;
+    }
+</script>
+</body>
+</html>
