@@ -13,7 +13,10 @@
 <script type="text/javascript">
     var request = new GetRequest();
     var a = decodeURIComponent(decodeURIComponent(request.a));
-
+    var b = decodeURIComponent(decodeURIComponent(request.b));
+    if (b){
+        document.title=b;
+    }
     var videoObject = {
         playerID: 'ckplayer01',//播放器ID，第一个字符不能是数字，用来在使用多个播放器时监听到的函数将在所有参数最后添加一个参数用来获取播放器的内容
         container: '#video', //容器的ID或className
@@ -64,7 +67,7 @@
             }
         ],
         config: '', //指定配置函数
-        debug: true, //是否开启调试模式
+        debug: false, //是否开启调试模式
         //flashplayer: true, //强制使用flashplayer
         mobileCkControls: true,//是否在移动端（包括ios）环境中显示控制栏
         mobileAutoFull: false,//在移动端播放后是否按系统设置的全屏播放
