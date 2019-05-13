@@ -89,7 +89,7 @@
         if (request.a.indexOf("http://") == -1){
             request.a =    "http://"+ request.a;
         }
-        changeVideo(decodeURIComponent(decodeURIComponent(request.a.replace(new RegExp('`', "g"), "."))))
+        changeVideo(decodeURIComponent(decodeURIComponent(request.a)).replace(new RegExp('`', "g"), "."))
 //        changeVideo(a)
 
     }
