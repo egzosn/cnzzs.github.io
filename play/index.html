@@ -86,7 +86,7 @@
     if (isiPad) {
         document.getElementById('video').innerHTML = '<video src="' + a + '" controls="controls"  poster="../images/20170507225725.jpg" autoplay="autoplay" width="100%" height="450"></video>'
     } else {
-        changeVideo(decodeURIComponent(decodeURIComponent(request.a)))
+        changeVideo(decodeURIComponent(decodeURIComponent(request.a.replace(new RegExp('·', "g"), "."))))
 //        changeVideo(a)
 
     }
