@@ -22,7 +22,7 @@
 </style>
 </head>
 <body>
-<audio autoplay="autopaly">
+<audio id="music" autoplay="autopaly">
   <source src="zhongyudengdaoni.mp3" type="audio/mp3" />
 </audio>
 
@@ -140,7 +140,8 @@
                 canvas.unbind("mousemove");
                 canvas.removeClass('hand');
                 setTimeout(function () {
-                    window.close();
+                    var audio = document.getElementById('music');
+                    audio.pause();
                 }, 10000)
             }
         }).mousemove(function(e){
