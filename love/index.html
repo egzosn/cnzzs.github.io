@@ -236,6 +236,10 @@
 
         runAsync().start();
     })();
+    setTimeout(function () {
+        var audio = document.getElementById('music');
+        audio.pause();
+    }, 70000)
     </script>
 
 </body>
