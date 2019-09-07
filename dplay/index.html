@@ -21,9 +21,11 @@
 <script type="text/javascript">
     var request = new GetRequest();
     var a = decodeURIComponent(decodeURIComponent(request.a));
-    var b = decodeURIComponent(decodeURIComponent(request.b));
-    if (b){
-        document.title=b;
+    if(request.b){
+        var b = decodeURIComponent(decodeURIComponent(request.b));
+        if (b){
+            document.title=b;
+        }
     }
     window.onload = function (ev) {
         let dp = new DPlayer({
