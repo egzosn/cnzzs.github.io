@@ -21,7 +21,7 @@
 <script type="text/javascript">
     var request = new GetRequest();
     var a = decodeURIComponent(decodeURIComponent(request.a));
-    if(request.b){
+    if(undefined!=request["b"] &&  request["b"]){
         var b = decodeURIComponent(decodeURIComponent(request.b));
         if (b){
             document.title=b;
