@@ -78,7 +78,7 @@
         var action = window.location.href,
             i = action.indexOf('?a=');
         if (i !== -1) {
-            string = decodeURIComponent(decodeURIComponent(action)).substring(i + 3) + "," + string;
+            string = " " + decodeURIComponent(decodeURIComponent(action)).substring(i + 3) + "," + string;
         }
         document.title=string;
 
@@ -91,7 +91,7 @@
           }*/
 
         var text3d = new THREE.TextGeometry(string, {
-            size: 80,
+            size: 50,
             height: 20,
             curveSegments: 2,
 //            font: "arial"
