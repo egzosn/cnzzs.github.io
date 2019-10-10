@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>爱你爱你</title>
+    <script src="https://cdn.jsdelivr.net/npm/flv.js/dist/flv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js/dist/hls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dashjs/dist/dash.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/webtorrent/latest/webtorrent.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pearplayer"></script>
+    <script type="text/javascript" src="../js/request.js"></script>
+    <link rel="stylesheet" href="apps.css">
+    <script src="apps.js"></script>
+</head>
+<body>
+<div id="dplayer"></div>
+
+<script type="text/javascript">
+    var request = new GetRequest();
+    var a = decodeURIComponent(decodeURIComponent(request.a));
+    if(undefined!=request["b"] &&  request["b"]){
+        var b = decodeURIComponent(decodeURIComponent(request.b));
+        if (b){
+            document.title=b;
+        }
+    }
+    window.onload = function (ev) {
+        let dp = new DPlayer({
+            container: document.getElementById('dplayer'),
+            video: {
+                name: 'HD',
+                url: a,
+            },
+        });
+    }
+</script>
+</body>
+</html>

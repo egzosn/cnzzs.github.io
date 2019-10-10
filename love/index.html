@@ -22,7 +22,7 @@
 </style>
 </head>
 <body>
-<audio autoplay="autopaly">
+<audio id="music" autoplay="autopaly">
   <source src="zhongyudengdaoni.mp3" type="audio/mp3" />
 </audio>
 
@@ -63,7 +63,7 @@
     }
     var c = decodeURIComponent(decodeURIComponent(request.c));
     if (!c || "undefined" == c){
-        c= "2018-08-17";
+        c= "2018-05-05";
     }
     var cs = c.split("-");
     var y = cs[0] - 0;
@@ -139,6 +139,10 @@
                 canvas.unbind("click");
                 canvas.unbind("mousemove");
                 canvas.removeClass('hand');
+                setTimeout(function () {
+                    var audio = document.getElementById('music');
+                    audio.pause();
+                }, 50000)
             }
         }).mousemove(function(e){
             var offset = canvas.offset(), x, y;
@@ -232,6 +236,10 @@
 
         runAsync().start();
     })();
+    setTimeout(function () {
+        var audio = document.getElementById('music');
+        audio.pause();
+    }, 70000)
     </script>
 
 </body>
